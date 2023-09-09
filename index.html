@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rock-Paper-Scissors</title>
+  <style>
+    html {
+      font-family: monospace;
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+    function getRandomFromArray(array) {
+      const randomIndex = Math.floor(Math.random() * array.length)
+      return array[randomIndex]
+    }
+  </script>
+  <script>
+    const options = ['rock', 'paper', 'scissors'];
+    // win conditions for player1. 'player1_player2'
+    const winConditions = ['rock_scissors', 'paper_rock', 'scissors_paper'];
+    const defaultState = {
+      player1: undefined,
+      player2: undefined,
+      result: undefined
+    }
+
+    const game = {
+      state: Object.create(defaultState),
+      update: function () {
+        this.state.player2 = getRandomFromArray(options)
+
+        if (!this.state.player1) return
+
+        this.state.result = `[player__] ${this.state.player1}\nVS\n[computer] ${this.state.player2}\n...\n`
+
+        if (this.state.player1 === this.state.player2) {
+          this.state.result += `DRAW!`
+        } else {
+          const choose = `${this.state.player1}_${this.state.player2}`
+
+          if (winConditions.includes(choose)) this.state.result += 'YOU WIN!'
+          else this.state.result += 'YOU LOSE!'
+        }
+      },
+      render: function () {
+        document.body.innerHTML = ''
+
+        const controls = document.createElement('div')
+        const instruction = document.createElement('p')
+
+        if (this.state.result) {
+          instruction.innerText = this.state.result
+          controls.append(instruction)
+
+          const restart = document.createElement('button')
+          restart.innerText = 'click to restart'
+          controls.append(restart)
+
+          restart.onclick = () => {
+            this.start()
+          }
+
+          document.body.append(controls)
+
+        } else {
+          instruction.innerText = 'click to choose:'
+          controls.append(instruction)
+
+          options.forEach(option => {
+            const gui = document.createElement('button')
+            gui.innerHTML = option
+            gui.onclick = () => {
+              this.state.player1 = option
+              this.update()
+              this.render()
+            }
+            controls.append(gui)
+          });
+
+          document.body.append(controls)
+        }
+      },
+      start: function () {
+        this.state = Object.create(defaultState)
+        this.update()
+        this.render()
+      }
+    }
+
+    game.start()
+  </script>
+</body>
+
+</html>
